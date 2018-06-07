@@ -42,7 +42,7 @@ public class CorsFilter implements Filter {
         // 设置preflight请求的结果能够被缓存多久
         response.setHeader("Access-Control-Max-Age", "3600");
         // 设置允许的header类型
-        response.setHeader("Access-Control-Allow-Headers", "Authorization,Accept, Origin,X-Requested-With, Content-Type, Last-Modified");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, currentName, Accept, Origin,X-Requested-With, Content-Type, Last-Modified");
         // 设置为true时允许浏览器读取response的内容
         response.setHeader("Access-Control-Allow-Credentials", "true");
 

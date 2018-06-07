@@ -1,8 +1,12 @@
 package com.menglin.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.menglin.common.ActionResult;
-import com.menglin.entity.Task;
+import com.menglin.common.CommonConst;
+import com.menglin.dto.JWTPayloadDto;
+import com.menglin.dto.SearchConditionsDto;
+import com.menglin.dto.TaskDto;
 import com.menglin.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.menglin.common.AssertArguments.checkNotNull;
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("/tasks")
+@RequestMapping("/task")
 @ResponseBody
 public class TaskController extends BaseController {
     private Logger logger = LoggerFactory.getLogger(TaskController.class);
@@ -24,79 +25,57 @@ public class TaskController extends BaseController {
     @Resource
     private TaskService taskService;
 
-
-    /*
-     * 分页查询
-     * */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ActionResult<?> list(
-            @RequestParam(value = "page", required = false) String page,
-            @RequestParam(value = "pageSize", required = false) String pageSize,
-            Task task) {
-        PageInfo<Task> pageInfo = taskService.getTasksByPage(Integer.parseInt(page), Integer.parseInt(pageSize), task);
+            HttpServletRequest request,
+            @RequestParam(value = "page") int page,
+            @RequestParam(value = "pageSize") int pageSize,
+            SearchConditionsDto searchConditionsDto) {
+        validateCurrentUserIdentity(request, CommonConst.ADMIN_IDENTITY);
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("rows", pageInfo.getList());
-        data.put("totalNum", pageInfo.getTotal());
-        data.put("totalPages", pageInfo.getPages());
+        PageInfo<TaskDto> pageInfo = taskService.getTasksByPage(page, pageSize, searchConditionsDto);
 
-        return createSuccessActionResult(data);
+        return getQueryByPageResult(pageInfo, "分页查询的作业不存在");
     }
 
-
-    /*
-     * 添加
-     * */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ActionResult<?> add(@RequestBody Task task) {
+    public ActionResult<?> add(HttpServletRequest request, @RequestBody TaskDto taskDto) {
+        JWTPayloadDto JWTPayloadDto = validateCurrentUserIdentityAndGetPayloadInfoFromRequest(request, CommonConst.ADMIN_IDENTITY);
 
-        int resultTotal = taskService.addTask(task);
+        taskDto.setCreator(JWTPayloadDto.getUsername());
+        int insertId = taskService.addTask(taskDto);
+        logger.info("request: task/add , task:{}, insertId:{}", JSONObject.toJSONString(taskDto.convertToTask()), insertId);
 
-        logger.info("request: tasks/add , task:{}", task.toString());
-        return resultTotal > 0 ? createSuccessActionResult("添加成功") : createFailActionResult("添加失败");
+        return insertId > 0 ? createSuccessActionResult("添加成功") : createFailActionResult("添加失败");
     }
 
-
-    /*
-     * 修改
-     * */
     @RequestMapping(value = "", method = RequestMethod.PUT)
-    public ActionResult<?> update(@RequestBody Task task) {
-        int resultTotal = taskService.updateTask(task);
+    public ActionResult<?> update(HttpServletRequest request, @RequestBody TaskDto taskDto) {
+        JWTPayloadDto JWTPayloadDto = validateCurrentUserIdentityAndGetPayloadInfoFromRequest(request, CommonConst.ADMIN_IDENTITY);
 
-        logger.info("request: tasks/update , task:{}", task.toString());
-        return resultTotal > 0 ? createSuccessActionResult("修改成功") : createFailActionResult("修改失败");
+        taskDto.setModifier(JWTPayloadDto.getUsername());
+        int updateId = taskService.updateTask(taskDto);
+        logger.info("request: task/update , task:{}, updateId:{}", JSONObject.toJSONString(taskDto.convertToTask()), updateId);
+
+        return updateId > 0 ? createSuccessActionResult("修改成功") : createFailActionResult("修改失败");
     }
 
-
-    /*
-     * 删除
-     * */
     @RequestMapping(value = "/{ids}", method = RequestMethod.DELETE)
-    public ActionResult<?> delete(@PathVariable String ids) {
-        checkNotNull(ids, "ids 不能为空");
+    public ActionResult<?> delete(HttpServletRequest request, @PathVariable String ids) {
+        validateCurrentUserIdentity(request, CommonConst.ADMIN_IDENTITY);
 
-        String[] idsStr = ids.split(",");
-        for (int i = 0; i < idsStr.length; i++) {
-            taskService.deleteTaskById(Long.parseLong(idsStr[i]));
-        }
+        taskService.batchDeleteTasksByIds(ids);
+        logger.info("request: task/delete , ids:{}", ids);
 
-        logger.info("request: tasks/delete , ids:{}", ids);
-        return createSuccessActionResult(null);
+        return createSuccessActionResult("删除成功");
     }
 
+    @RequestMapping(value = "/id/{id}", method = RequestMethod.GET)
+    public ActionResult<?> queryById(HttpServletRequest request, @PathVariable Long id) {
+        validateCurrentUserIdentity(request, CommonConst.ADMIN_IDENTITY);
 
-    /*
-     * 根据 ID 查询
-     * */
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public ActionResult<?> queryById(@PathVariable String id) {
-        checkNotNull(id, "id 不能为空");
+        TaskDto taskDto = taskService.getTaskById(id);
 
-        Task task = taskService.getById(Long.parseLong(id));
-
-        return createSuccessActionResult(task);
+        return taskDto != null ? createSuccessActionResult(taskDto) : createFailActionResult("查询的作业不存在");
     }
-
 }

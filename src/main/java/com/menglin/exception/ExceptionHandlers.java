@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.thymeleaf.util.StringUtils;
 
 /*
  * 全局异常处理
@@ -27,11 +30,15 @@ public class ExceptionHandlers {
         return actionResult;
     }
 
+
+    /**
+     * 10000 - 参数错误
+     */
     @ExceptionHandler({ArgumentsException.class})
     public ActionResult<?> handleGlobalException(ArgumentsException e) {
         logger.info("ArgumentsException, exception:{}", e.getMessage());
-        ActionResult actionResult = new ActionResult();
-        if ("".equals(e.getMessage())) {
+        ActionResult actionResult;
+        if (StringUtils.isEmpty(e.getMessage())) {
             actionResult = createFailActionResult(ErrorStateEnum.PARAMETER_ERROR.getState(), ErrorStateEnum.PARAMETER_ERROR.getStateInfo());
         } else {
             String errorMessage = ErrorStateEnum.PARAMETER_ERROR.getStateInfo() + ": " + e.getMessage();
@@ -40,11 +47,26 @@ public class ExceptionHandlers {
         return actionResult;
     }
 
+
+    /**
+     * 500 - 业务逻辑出错
+     */
     @ExceptionHandler({ServiceException.class})
     public ActionResult<?> handleBusinessException(ServiceException e) {
         logger.info("ServiceException, exception:{}", e);
         return createFailActionResult(e.getCode(), e.getMessage());
     }
+
+
+    /**
+     * 500 - 文件上传过大
+     */
+    @ExceptionHandler({MaxUploadSizeExceededException.class})
+    public ActionResult<?> handleBusinessException(MaxUploadSizeExceededException e) {
+        logger.info("MaxUploadSizeExceededException, exception:{}", e);
+        return createFailActionResult(500, "上传文件过大");
+    }
+
 
     /**
      * 400 - Bad Request
@@ -56,6 +78,18 @@ public class ExceptionHandlers {
         return createFailActionResult(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase());
     }
 
+
+    /**
+     * 404 - Not Found
+     */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ActionResult<?> handleHttpMessageNotFoundException(NoHandlerFoundException e) {
+        logger.error("未找到相关资源, exception:{}", e);
+        return createFailActionResult(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+    }
+
+
     /**
      * 405 - Method Not Allowed
      */
@@ -65,6 +99,7 @@ public class ExceptionHandlers {
         logger.error("不支持当前请求方法, exception:{}", e);
         return createFailActionResult(HttpStatus.METHOD_NOT_ALLOWED.value(), HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase());
     }
+
 
     /**
      * 415 - Unsupported Media Type
@@ -76,6 +111,7 @@ public class ExceptionHandlers {
         return createFailActionResult(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), HttpStatus.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase());
     }
 
+
     /**
      * 500 - Internal Server Error
      */
@@ -83,8 +119,6 @@ public class ExceptionHandlers {
     @ExceptionHandler(Exception.class)
     public ActionResult<?> handleException(Exception e) {
         logger.error("服务运行异常, exception:{}", e);
-        e.printStackTrace();
         return createFailActionResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
     }
-
 }

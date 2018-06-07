@@ -2,7 +2,7 @@ package com.menglin.service;
 
 import com.menglin.base.ServiceBaseTest;
 import com.menglin.dao.StudentDaoTest;
-import com.menglin.entity.Student;
+import com.menglin.dto.UserDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -26,16 +26,16 @@ public class StudentServiceTest extends ServiceBaseTest {
     @Test
     public void getStudentById() {
         Long studentId = 1L;
-        Student student = studentService.getStudentById(studentId);
-        assertEquals("校验 id", studentId, student.getId());
+        UserDto userDto = studentService.getStudentById(studentId);
+        assertEquals("校验 id", studentId, userDto.getId());
         logger.info("StudentService getStudentById， studentId:{}", studentId);
     }
 
     @Test
     public void getStudentByUsername() {
         String studentUsername = "test";
-        Student student = studentService.getStudentByUsername(studentUsername);
-        assertEquals("校验 username", "test", student.getUsername());
+        UserDto userDto = studentService.getStudentByUsername(studentUsername);
+        assertEquals("校验 username", "test", userDto.getUsername());
         logger.info("StudentService getStudentById， studentUsername:{}", studentUsername);
     }
 }

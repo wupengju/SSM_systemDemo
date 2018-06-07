@@ -1,52 +1,23 @@
 package com.menglin.service;
 
 import com.github.pagehelper.PageInfo;
-import com.menglin.entity.Task;
+import com.menglin.dto.SearchConditionsDto;
+import com.menglin.dto.TaskDto;
 
 public interface TaskService {
-    /**
-     * 返回相应的数据集合
-     *
-     * @return
-     */
-    public PageInfo<Task> getTasksByPage(int start, int pageSize, Task task);
+    int addTask(TaskDto taskDto);
 
-    /**
-     * 数据数目
-     *
-     * @return
-     */
-    public Long getTotalTask();
+    int updateTask(TaskDto taskDto);
 
-    /**
-     * 添加文章
-     *
-     * @param task
-     * @return
-     */
-    public int addTask(Task task);
+    int updateTaskUrlAndWriteTaskAttachment(Long taskId, String taskAttachmentUrl, String modifier, Boolean isDeleteAttachment);
 
-    /**
-     * 修改文章
-     *
-     * @param task
-     * @return
-     */
-    public int updateTask(Task task);
+    void deleteTaskById(Long id);
 
-    /**
-     * 删除
-     *
-     * @param id
-     * @return
-     */
-    public int deleteTaskById(Long id);
+    void batchDeleteTasksByIds(String ids);
 
-    /**
-     * 根据id查找
-     *
-     * @param id
-     * @return
-     */
-    public Task getById(Long id);
+    TaskDto getTaskById(Long id);
+
+    PageInfo<TaskDto> getTasksByPageAndTeacherId(int start, int pageSize, Long teacherId, SearchConditionsDto searchConditionsDto);
+
+    PageInfo<TaskDto> getTasksByPage(int start, int pageSize, SearchConditionsDto searchConditionsDto);
 }

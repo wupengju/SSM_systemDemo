@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+    <!--切面-->
+    <bean id="timeHandler" class="com.menglin.aop.TimeHandler"/>
+    <aop:config>
+        <aop:aspect id="controllerAop" ref="timeHandler">
+            <aop:pointcut id="controllerMethod" expression="execution(* com.menglin.controller..*(..))"/>
+            <aop:before method="beforeMethod" pointcut-ref="controllerMethod"/>
+            <aop:after method="beforeMethod" pointcut-ref="controllerMethod"/>
+        </aop:aspect>
+        <!--<aop:aspect id="serviceAop" ref="timeHandler">-->
+        <!--<aop:pointcut id="serviceMethod" expression="execution(* com.menglin.service..*(..))"/>-->
+        <!--<aop:before method="beforeMethod" pointcut-ref="serviceMethod"/>-->
+        <!--<aop:after method="beforeMethod" pointcut-ref="serviceMethod"/>-->
+        <!--</aop:aspect>-->
+    </aop:config>
+</beans>

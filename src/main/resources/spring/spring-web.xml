@@ -26,9 +26,9 @@
 
     <!-- 3.配置HTML 显示ViewResolver -->
     <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
-        <property name="templateLoaderPath" value="/WEB-INF/dist"/>
+        <property name="templateLoaderPath" value="/WEB-INF/"/>
     </bean>
-    <bean id="htmlviewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+    <bean id="htmlViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
         <property name="suffix" value=".html"/>
         <property name="contentType" value="text/html;charset=UTF-8"/>
         <property name="order" value="0"/>
@@ -48,14 +48,26 @@
     <!-- 5.扫描 web 相关的bean -->
     <context:component-scan base-package="com.menglin.controller"/>
 
+    <!-- 配置静态资源 -->
+    <mvc:resources mapping="/css/**/*" location="/css/"/>
+    <mvc:resources mapping="/js/**/*" location="/js/"/>
+    <mvc:resources mapping="/generic/web/**/*" location="/generic/web/"/>
+    <mvc:resources mapping="/pdfs/**/*" location="/pdfs/"/>
+
     <!--6.拦截器: 只能拦截 Ajax 请求即所有 controller，不能拦截静态资源请求 -->
     <mvc:interceptors>
         <mvc:interceptor>
             <!-- 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->
-            <mvc:mapping path="/**"/>
-            <!-- /register 和 /login 不需要拦截-->
+            <mvc:mapping path="/**/*"/>
+            <!-- /register/* 和 /login 不需要拦截-->
             <mvc:exclude-mapping path="/login"/>
-            <mvc:exclude-mapping path="/register"/>
+            <mvc:exclude-mapping path="/register/student"/>
+            <mvc:exclude-mapping path="/register/teacher"/>
+            <mvc:exclude-mapping path="/college/list"/>
+            <mvc:exclude-mapping path="/major/list"/>
+            <mvc:exclude-mapping path="/classTeam/list"/>
+            <mvc:exclude-mapping path="/file/taskAttachment"/>
+            <mvc:exclude-mapping path="/file/taskAnswerAttachment"/>
             <!--spring-mvc-3.2.xsd 下面才不会报错-->
             <!--防止静态文件被拦截-->
             <mvc:exclude-mapping path="/**/*.css"/>
@@ -64,10 +76,18 @@
             <mvc:exclude-mapping path="/**/*.gif"/>
             <mvc:exclude-mapping path="/**/*.jpg"/>
             <mvc:exclude-mapping path="/**/*.jpeg"/>
-            <!-- SPA 只有一个页面入口 -->
-            <mvc:exclude-mapping path="/**/*index.html"/>
-            <bean class="com.menglin.filter.JWTCheckInterceptor"/>
+            <mvc:exclude-mapping path="/**/*.pdf"/>
+            <mvc:exclude-mapping path="/**/*.html"/>
+            <bean class="com.menglin.interceptor.JWTCheckInterceptor"/>
         </mvc:interceptor>
         <!-- 当设置多个拦截器时，先按顺序调用preHandle方法，然后逆序调用每个拦截器的postHandle和afterCompletion方法 -->
     </mvc:interceptors>
+
+    <!-- 7.上传文件配置: maxUploadSize【20MB】resolveLazily:【推迟文件解析，以便捕获文件大小异常】 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="20971520"/>
+        <property name="maxInMemorySize" value="40960"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="resolveLazily" value="true"/>
+    </bean>
 </beans>

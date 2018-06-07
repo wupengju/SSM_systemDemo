@@ -45,8 +45,8 @@ public class JWTUtil {
 
         String jsonString = JSON.toJSONString(object);
         long exp = System.currentTimeMillis() + maxAge;
-        System.out.println("JWTUtil 当前时间:" + new DateTime().toString("yyyy-MM-dd HH:mm:ss EE"));
-        System.out.println("JWTUtil 过期时间:" + new DateTime(exp).toString("yyyy-MM-dd HH:mm:ss EE"));
+        logger.debug("WTUtil 当前时间:{}", new DateTime().toString("yyyy-MM-dd HH:mm:ss EE"));
+        logger.debug("JWTUtil 过期时间:", new DateTime(exp).toString("yyyy-MM-dd HH:mm:ss EE"));
         String token = JWT.create()
                 .withHeader(map) // header
                 .withClaim(PAYLOAD, jsonString) // 存放的内容 json

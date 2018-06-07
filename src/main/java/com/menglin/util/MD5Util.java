@@ -1,8 +1,13 @@
 package com.menglin.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.thymeleaf.util.StringUtils;
+
 import java.security.MessageDigest;
 
 public class MD5Util {
+    private static Logger logger = LoggerFactory.getLogger(MD5Util.class);
 
     private static String byteArrayToHexString(byte b[]) {
         StringBuffer resultSb = new StringBuffer();
@@ -22,21 +27,28 @@ public class MD5Util {
         return hexDigits[d1] + hexDigits[d2];
     }
 
-    public static String MD5Encode(String origin, String charsetname) {
+    public static String MD5Encode(String origin, String charsetName) {
         String resultString = null;
         try {
-            resultString = new String(origin);
+            resultString = origin;
             MessageDigest md = MessageDigest.getInstance("MD5");
-            if (charsetname == null || "".equals(charsetname)) {
+            if (StringUtils.isEmpty(charsetName)) {
                 resultString = byteArrayToHexString(md.digest(resultString.getBytes()));
             } else {
-                resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetname)));
+                resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetName)));
             }
-        } catch (Exception exception) {
+        } catch (Exception e) {
+            logger.info("MD5Encode error, origin:{}, charsetName:{}, e:{}", origin, charsetName, e);
             throw new RuntimeException("MD5Encode error.");
         }
         return resultString;
     }
 
     private static final String hexDigits[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
+
+    /*
+    public static void main(String[] args) {
+        System.out.println(MD5Encode("server_salt", ""));
+    }
+    */
 }

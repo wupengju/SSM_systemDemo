@@ -39,7 +39,7 @@ public class BaseTest {
     }
 
     /*
-     * Mock new Entity Class Object
+     * Mock new Entity ClassTeam Object
      * */
     /*
      * Student
@@ -55,11 +55,11 @@ public class BaseTest {
     /*
      * Task
      * */
-    protected Task createTask(Long id, String name, String author) {
+    protected Task createTask(Long id, String name, String creator) {
         Task task = new Task();
         task.setId(id);
         task.setName(name);
-        task.setAuthor(author);
+        task.setCreator(creator);
         return task;
     }
 }

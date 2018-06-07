@@ -7,9 +7,9 @@
 -->
 <generatorConfiguration>
     <!--导入属性配置-->
-    <properties resource="jdbc.properties"></properties>
+    <properties resource="jdbc-druid-config.properties"></properties>
 
-    <context id="mysqlgenerator" defaultModelType="hierarchical" targetRuntime="MyBatis3">
+    <context id="mysqlgenerator" defaultModelType="flat" targetRuntime="MyBatis3">
 
         <!-- 生成的Java文件的编码 -->
         <property name="javaFileEncoding" value="UTF-8"/>
@@ -55,20 +55,129 @@
           type="MIXEDMAPPER",生成基于注解的Java Model 和相应的Mapper对象
           type="XMLMAPPER",生成SQLMap XML文件和独立的Mapper接口
         -->
-        <javaClientGenerator targetPackage="com.menglin.dao" targetProject="src/main/java" type="XMLMAPPER">
+        <javaClientGenerator targetPackage="com.menglin.generator.dao" targetProject="src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="student" domainObjectName="Student"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
+        <!--<table tableName="student" domainObjectName="Student"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="teacher" domainObjectName="Teacher"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="admin" domainObjectName="Admin"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="class" domainObjectName="Class"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="class_task" domainObjectName="ClassTask"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="course" domainObjectName="Course"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="teacher_course" domainObjectName="TeacherCourse"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="student_course" domainObjectName="StudentCourse"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="college" domainObjectName="College"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="major" domainObjectName="Major"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="major_course" domainObjectName="MajorCourse"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="notice" domainObjectName="Notice"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--</table>-->
+
+        <!--<table tableName="task" domainObjectName="Task"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--<generatedKey column="id" sqlStatement="Mysql"/>-->
+        <!--</table>-->
+
+        <!--<table tableName="student_task" domainObjectName="StudentTask"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--<generatedKey column="id" sqlStatement="Mysql"/>-->
+        <!--</table>-->
+
+        <!--<table tableName="role" domainObjectName="Role"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--<generatedKey column="id" sqlStatement="Mysql"/>-->
+        <!--</table>-->
+
+        <!--<table tableName="permission" domainObjectName="Permission"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--<generatedKey column="id" sqlStatement="Mysql"/>-->
+        <!--</table>-->
+
+        <!--<table tableName="role_permission" domainObjectName="RolePermission"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--<generatedKey column="id" sqlStatement="Mysql"/>-->
+        <!--</table>-->
+
+        <!--<table tableName="teacher_class_team" domainObjectName="TeacherClassTeam"-->
+        <!--enableCountByExample="false" enableUpdateByExample="false"-->
+        <!--enableDeleteByExample="false" enableSelectByExample="false"-->
+        <!--selectByExampleQueryId="false">-->
+        <!--<generatedKey column="id" sqlStatement="Mysql"/>-->
+        <!--</table>-->
 
         <table tableName="task" domainObjectName="Task"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="Mysql"/>
         </table>
 
     </context>

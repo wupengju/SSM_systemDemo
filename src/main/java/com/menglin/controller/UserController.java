@@ -1,9 +1,10 @@
 package com.menglin.controller;
 
-import com.menglin.Bo.UserBo;
+import com.alibaba.fastjson.JSONObject;
 import com.menglin.common.ActionResult;
-import com.menglin.dto.JWTCheckInfo;
-import com.menglin.dto.LoginUserInfo;
+import com.menglin.dto.*;
+import com.menglin.service.StudentService;
+import com.menglin.service.TeacherService;
 import com.menglin.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,45 +24,66 @@ public class UserController extends BaseController {
 
     @Resource
     private UserService userService;
+    @Resource
+    private StudentService studentService;
+    @Resource
+    private TeacherService teacherService;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ActionResult<?> login(HttpServletRequest request, @RequestBody LoginUserInfo loginUserInfo) {
-
-        String currentName = checkJWTReturnTitle(request);
-        if (!"".equals(currentName)) {
-            return createSuccessActionResult("已经登录用户:" + currentName);
+    public ActionResult<?> login(HttpServletRequest request, @RequestBody LoginUserDto loginUserDto) {
+        JWTPayloadDto JWTPayloadDto = getPayloadInfoFromRequest(request);
+        if (JWTPayloadDto != null) {
+            return createSuccessActionResult("已经登录用户: " + JWTPayloadDto.getUsername() + ", 身份: " + JWTPayloadDto.getIdentity());
         }
+        LoginResponseDto loginResponseDto;
+        try {
+            loginResponseDto = userService.login(loginUserDto.getUsername(), loginUserDto.getSignature());
+        } catch (Exception e) {
+            logger.info("/login，login fail, LoginUserDto:{}", JSONObject.toJSONString(loginUserDto));
+            return createFailActionResult("登录失败，请确认登录信息无误后再重试");
+        }
+        logger.info("/login， LoginUserDto:", JSONObject.toJSONString(loginUserDto));
 
-        UserBo userBo = userService.login(loginUserInfo.getUsername(), loginUserInfo.getUuid(), loginUserInfo.getSignature());
-
-        logger.info("/login， LoginUserInfo:", loginUserInfo.toString());
-
-        return createSuccessActionResult(userBo);
+        return createSuccessActionResult(loginResponseDto);
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public ActionResult<?> register(HttpServletRequest request, @RequestBody LoginUserInfo loginUserInfo) {
+    @RequestMapping(value = "/register/student", method = RequestMethod.POST)
+    public ActionResult<?> registerStudent(@RequestBody StudentDto studentDto) {
+        studentDto = (StudentDto) userService.registerNewAccount(studentDto);
+        studentDto.setCreator(studentDto.getUsername());
+        int insertId = studentService.addStudent(studentDto);
+        logger.info("/register/student， student:{}", JSONObject.toJSONString(studentDto.convertToStudent()));
 
-        String currentName = checkJWTReturnTitle(request);
-        if (!"".equals(currentName)) {
-            return createSuccessActionResult("已经登录用户:" + currentName);
-        }
-
-        UserBo userBo = userService.login(loginUserInfo.getUsername(), loginUserInfo.getUuid(), loginUserInfo.getSignature());
-
-        logger.info("/register test， LoginUserInfo:", loginUserInfo.toString());
-
-        return createSuccessActionResult(userBo);
+        return insertId > 0 ? createSuccessActionResult("注册成功") : createSuccessActionResult("注册失败");
     }
 
-    private String checkJWTReturnTitle(HttpServletRequest request) {
-        JWTCheckInfo jwtCheckInfo = new JWTCheckInfo();
-        jwtCheckInfo.setAuthorization(request.getHeader("Authorization"));
-        jwtCheckInfo.setCurrentName(request.getHeader("currentName"));
-        jwtCheckInfo.setRequestUrI(request.getRequestURI());
-        if (jwtCheckInfo.getAuthorization() == null || jwtCheckInfo.getCurrentName() == null || !userService.checkJWT(jwtCheckInfo)) {
-            return "";
+    @RequestMapping(value = "/register/teacher", method = RequestMethod.POST)
+    public ActionResult<?> registerTeacher(@RequestBody TeacherDto teacherDto) {
+        teacherDto = (TeacherDto) userService.registerNewAccount(teacherDto);
+        teacherDto.setCreator(teacherDto.getUsername());
+        int insertId = teacherService.addTeacher(teacherDto);
+        logger.info("/register/teacher， teacher:{}", JSONObject.toJSONString(teacherDto.convertToTeacher()));
+
+        return insertId > 0 ? createSuccessActionResult("注册成功") : createSuccessActionResult("注册失败");
+    }
+
+    @RequestMapping(value = "/quit", method = RequestMethod.POST)
+    public ActionResult<?> quit(HttpServletRequest request) {
+        JWTPayloadDto JWTPayloadDto = getPayloadInfoFromRequest(request);
+        if (JWTPayloadDto != null) {
+            String currentUserPreviewFileRealPath = "/pdfs/" + JWTPayloadDto.getUsername() + "/";
+            String realPath = request.getServletContext().getRealPath(currentUserPreviewFileRealPath);
+            logger.info("/quit，currentName:{}", JWTPayloadDto.getUsername());
+            LoginResponseDto loginResponseDto;
+            try {
+                loginResponseDto = userService.quit(realPath, JWTPayloadDto);
+            } catch (Exception e) {
+                logger.info("/quit，quit fail, JWTPayloadDto:{}", JSONObject.toJSONString(JWTPayloadDto));
+                return createFailActionResult("退出失败, " + e.getMessage());
+            }
+            return createSuccessActionResult(loginResponseDto);
+        } else {
+            return createFailActionResult("请先登录用户");
         }
-        return jwtCheckInfo.getCurrentName();
     }
 }

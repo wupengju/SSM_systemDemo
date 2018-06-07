@@ -109,6 +109,9 @@
         <appender-ref ref="SYNC_FILE"/>
     </logger>
 
+    <!-- 数据库操作 -->
+    <logger name="com.menglin.dao" level="DEBUG"/>
+
     <!--mybatis log configure-->
     <logger name="com.apache.mybatis" level="TRACE"/>
     <logger name="java.sql.Connection" level="DEBUG"/>

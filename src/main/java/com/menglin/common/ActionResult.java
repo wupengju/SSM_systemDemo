@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class ActionResult<T> implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 999999999L;
 
     private T data;
     private Integer code;

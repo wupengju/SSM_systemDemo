@@ -63,7 +63,7 @@ public final class SpringUtil implements BeanFactoryPostProcessor {
 
     /**
      * @param name
-     * @return Class 注册对象的类型
+     * @return ClassTeam 注册对象的类型
      * @throws NoSuchBeanDefinitionException
      */
     public static Class<?> getType(String name) throws NoSuchBeanDefinitionException {

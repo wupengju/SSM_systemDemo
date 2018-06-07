@@ -1,7 +1,6 @@
 package com.menglin.aop;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.reflect.CodeSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +22,13 @@ public class TimeHandler {
         logJoinPointInfo(joinPoint);
 
         // 获取传入方法实参的参数名和参数值
-        String[] paramNames = ((CodeSignature) joinPoint.getSignature()).getParameterNames();
+        /*String[] paramNames = ((CodeSignature) joinPoint.getSignature()).getParameterNames();
         Object[] paramValue = joinPoint.getArgs();
         StringBuilder paramsInfo = new StringBuilder();
         for (int i = 0, length = paramNames.length; i < length; i++) {
             paramsInfo.append(paramNames[i]).append(":").append(paramValue[i]);
         }
-        logger.info("params:{}", paramsInfo);
+        logger.info("params:{}", paramsInfo);*/
     }
 
     public void afterMethod(JoinPoint joinPoint) {
